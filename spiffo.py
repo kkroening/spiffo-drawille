@@ -14,24 +14,24 @@ stdscr.refresh()
 
 a1 = 500.0
 a2 = 220.0
-a3 = 120.0
+a3 = 20.0
 c1 = 0.11
 c2 = 0.06
 c3 = 0.12
 w1 = 3.0
 w2 = 4.25
 w3 = 1.0
-dw1 = 2.8
+dw1 = 0.8
 dw2 = -0.069
 dw3 = -1.0
-max_freq = 30.0
+max_freq = 12.0
 p1 = 0.0
 p2 = 0.0
 p3 = 0.0
 dp1 = 0.0
 dp2 = -0.0132
 dp3 = 0.0
-depth = 150.0
+speed = 2.0
 cycles = 2.0
 resolution = 600
 
@@ -86,8 +86,7 @@ def update(c, deltaTime):
 def __main__(stdscr, projection=False):
     c = Canvas()
     while 1:
-	render(c)
-	update(c, 0.1)
+        render(c)
 
         #f = c.frame(0, 0, 180, 140)
         f = c.frame(0, 0, width, height)
@@ -95,6 +94,7 @@ def __main__(stdscr, projection=False):
         stdscr.refresh()
 
         sleep(1.0/20)
+        update(c, 1.0/20 * speed) # FIXME: use clock.
         c.clear()
 
 
