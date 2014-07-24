@@ -5,8 +5,6 @@ This is a simple demo of signal visualization using Python and [Drawille](https:
 
 Spiffo animates a fractal spirograph of exponentially decaying sinusoids with varying frequency and phase, interfering with one another in the complex plane. The result is a single continuous curve that exhibits fascinating visual patterns.
 
-Live demo: http://kkroening.github.io/spiffo/
-
 ### Using Spiffo
 Spiffo-Drawille contains several configurable settings in spiffo.py that allows a developer to tweak various parameters:
 - a1,a2,a3 - amplitude; higher values equal bigger waves.
