@@ -41,43 +41,43 @@ height = (int(heightStr)-1)*4
 
 def render(c):
     for n in range(int(cycles * resolution)):
-	i = float(n) / float(resolution)
-	pow1 = math.pow(c1, i)
-	pow2 = math.pow(c2, i)
-	pow3 = math.pow(c3, i)
-	x1 = a1 * pow1 * math.cos(math.pi*2*(i*w1 + p1))
-	y1 = a1 * pow1 * math.sin(math.pi*2*(i*w1 + p1))
-	x2 = a2 * pow2 * math.cos(math.pi*2*(i*w2 + p2))
-	y2 = a2 * pow2 * math.sin(math.pi*2*(i*w2 + p2))
-	x3 = a3 * pow3 * math.cos(math.pi*2*(i*w3 + p3))
-	y3 = a3 * pow3 * math.sin(math.pi*2*(i*w3 + p3))
-	x = (x1 + x2 + x3)*width/500 + width/2
-	y = (y1 + y2 + y3)*height/500 + height/2
-	if not ((x < 0 or x > width) and (y < 0 or y > width) and (prevx < 0 or prevx > height) and (prevy < 0 or prevy > height)):
-	    if n != 0:
-		for px,py in line(prevx, prevy, x, y):
-		    c.set(px, py)
-	prevx = x
-	prevy = y
+        i = float(n) / float(resolution)
+        pow1 = math.pow(c1, i)
+        pow2 = math.pow(c2, i)
+        pow3 = math.pow(c3, i)
+        x1 = a1 * pow1 * math.cos(math.pi*2*(i*w1 + p1))
+        y1 = a1 * pow1 * math.sin(math.pi*2*(i*w1 + p1))
+        x2 = a2 * pow2 * math.cos(math.pi*2*(i*w2 + p2))
+        y2 = a2 * pow2 * math.sin(math.pi*2*(i*w2 + p2))
+        x3 = a3 * pow3 * math.cos(math.pi*2*(i*w3 + p3))
+        y3 = a3 * pow3 * math.sin(math.pi*2*(i*w3 + p3))
+        x = (x1 + x2 + x3)*width/500 + width/2
+        y = (y1 + y2 + y3)*height/500 + height/2
+        if not ((x < 0 or x > width) and (y < 0 or y > width) and (prevx < 0 or prevx > height) and (prevy < 0 or prevy > height)):
+            if n != 0:
+                for px,py in line(prevx, prevy, x, y):
+                    c.set(px, py)
+        prevx = x
+        prevy = y
 
 
 def update(c, deltaTime):
     global w1, w2, w3, dw1, dw2, dw3, p1, p2, p3, dp1, dp2, dp3
     w1 += dw1*deltaTime
     if w1 > max_freq:
-	w1 = -max_freq
+        w1 = -max_freq
     elif w1 < -max_freq:
-	w1 = max_freq
+        w1 = max_freq
     w2 += dw2*deltaTime
     if w2 > max_freq:
-	w2 = -max_freq
+        w2 = -max_freq
     elif w2 < -max_freq:
-	w2 = max_freq
+        w2 = max_freq
     w3 += dw3*deltaTime
     if w3 > max_freq:
-	w3 = -max_freq
+        w3 = -max_freq
     elif w3 < -max_freq:
-	w3 = max_freq
+        w3 = max_freq
     p1 += dp1 * deltaTime
     p2 += dp2 * deltaTime
     p3 += dp3 * deltaTime
