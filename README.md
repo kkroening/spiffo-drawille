@@ -26,12 +26,10 @@ A more user-friendly interface may be added in the future.
 ![Screenshot](https://raw.githubusercontent.com/kkroening/spiffo-drawille/master/screenshot.png)
 
 ### Building/Running
-No explicit build steps are required; simply point your web browser to index.html.
-
-Alternatively, host the code with your favorite web server. For example, to use python's SimpleHTTPServer run the following and point your browser at localhost:8000:
+No explicit build steps are required; simply run spiffo.py:
 
 ```
-python -m SimpleHTTPServer
+python spiffo.py
 ```
 
 ### See Also
