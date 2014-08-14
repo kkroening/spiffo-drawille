@@ -60,6 +60,7 @@ class Control:
         self.value = float(value)
         self.min_value = float(min_value)
         self.max_value = float(max_value)
+        self.visible = True
 
     def render(c):
         for x in range(self.x, self.x + self.width + 1):
@@ -102,6 +103,9 @@ class UI:
         line_top = top
 
         for control in self.controls:
+            if not control.visible:
+                continue
+
             c.set_text(name_left, line_top, control.name)
             minvalue_left = name_left + (UI_NAME_CHARS + 3) * HORIZONTAL_PIXELS_PER_CHAR
             c.set_text(minvalue_left, line_top, str(int(control.min_value)))
@@ -131,13 +135,13 @@ class UI:
 
     def decrease_control(self):
         control = self.controls[self.selected_control_id]
-        control.value = control.value - 1/10. * (control.max_value - control.min_value)
+        control.value = control.value - 1/20. * (control.max_value - control.min_value)
         if control.value < control.min_value:
             control.value = control.min_value
 
     def increase_control(self):
         control = self.controls[self.selected_control_id]
-        control.value = control.value + 1/10. * (control.max_value - control.min_value)
+        control.value = control.value + 1/20. * (control.max_value - control.min_value)
         if control.value > control.max_value:
             control.value = control.max_value
 

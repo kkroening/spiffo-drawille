@@ -18,7 +18,7 @@ height = (size[1]-1) * ui.VERTICAL_PIXELS_PER_CHAR
 
 
 amplitude = ui.Control("amp", 1, 0, 2)
-frequency = ui.Control("freq", 1.0, 0.1, 5)
+frequency = ui.Control("freq", 1.0, 0.1, 8)
 phase = ui.Control("phase", 0.0, -1, 1)
 resolution = ui.Control("res", 5, 1, 10)
 speed = ui.Control("speed", 1, -2, 2)
@@ -131,6 +131,12 @@ mode = 0
 max_mode = 4
 
 def on_set_mode():
+    global speed
+    if mode == 0:
+        speed.visible = False
+    else:
+        speed.visible = True
+
     if mode < 2:
         sine_plot.centerx = width/2
         sine_plot.centery = height/2

@@ -19,11 +19,12 @@ height = (size[1]-1) * ui.VERTICAL_PIXELS_PER_CHAR
 
 amplitude1 = ui.Control("amp1", 1, 0, 2)
 amplitude2 = ui.Control("amp2", 0, 0, 2)
-frequency1 = ui.Control("freq1", 1.0, 0.1, 5)
-frequency2 = ui.Control("freq2", 2.0, 0.1, 5)
+frequency1 = ui.Control("freq1", 1.0, 0.1, 8)
+frequency2 = ui.Control("freq2", 2.0, 0.1, 8)
 phase1 = ui.Control("phase1", 0.0, -1, 1)
 phase2 = ui.Control("phase2", 0.0, -1, 1)
 resolution = ui.Control("res", 5, 1, 10)
+cycles = ui.Control("cycles", 1, 0, 5)
 speed = ui.Control("speed", 1, -2, 2)
 
 time = 0
@@ -36,6 +37,7 @@ controls = [
     phase1,
     phase2,
     #resolution,
+    cycles,
     speed
 ]
 
@@ -70,9 +72,9 @@ class SinePlot(Plot):
         self.draw_left_aligned_axes(c)
 
         count = resolution.value * 20
-        for n in range(int(count)):
+        for n in range(int(count * cycles.value)):
             i = n / count
-            x = self.left + i * self.width
+            x = self.left + i * self.width / cycles.value
             y1 = self.height/4. * amplitude1.value * math.sin(2 * math.pi * (frequency1.value * i +  phase1.value))
             y2 = self.height/4. * amplitude2.value * math.sin(2 * math.pi * (frequency2.value * i +  phase2.value))
             y = self.centery - (y1 + y2)
@@ -82,7 +84,7 @@ class SinePlot(Plot):
             prevy = y
 
         if mode != 0:
-            x = self.left + time * self.width
+            x = self.left + time * self.width / cycles.value
             y1 = int(self.height/4. * amplitude1.value * math.sin(2 * math.pi * (frequency1.value * time + phase1.value)))
             y2 = int(self.height/4. * amplitude2.value * math.sin(2 * math.pi * (frequency2.value * time + phase2.value)))
             y = self.centery - (y1 + y2)
@@ -115,6 +117,20 @@ class PhaseSpace2DPlot(Plot):
 
         ui.draw_ellipse(c, x, y, 5, 5, 16)
 
+        if mode >= 4:
+            for n in range(int(time*100)):
+                i = n / 100.
+                x1 = int(self.width/4. * amplitude1.value * math.cos(2 * math.pi * (frequency1.value * i + phase1.value)))
+                x2 = int(self.width/4. * amplitude2.value * math.cos(2 * math.pi * (frequency2.value * i + phase2.value)))
+                y1 = int(self.height/4. * amplitude1.value * math.sin(2 * math.pi * (frequency1.value * i + phase1.value)))
+                y2 = int(self.height/4. * amplitude2.value * math.sin(2 * math.pi * (frequency2.value * i + phase2.value)))
+                x = self.centerx + x1 + x2
+                y = self.centery - (y1 + y2)
+                if n != 0:
+                    ui.draw_line(c, x, y, prevx, prevy)
+                prevx = x
+                prevy = y
+
 
 ui_width = width / 5
 ui_height = ui.VERTICAL_PIXELS_PER_CHAR * len(controls) + 10
@@ -140,15 +156,21 @@ def render(c):
 def update(c, deltaTime):
     global time
     time += deltaTime
-    if time > 1:
+    if time > cycles.value:
         time = 0
     elif time < 0:
-        time = 1
+        time = cycles.value
 
 mode = 0
-max_mode = 4
+max_mode = 5
 
 def on_set_mode():
+    global speed
+    if mode == 0:
+        speed.visible = False
+    else:
+        speed.visible = True
+
     if mode < 2:
         sine_plot.centerx = width/2
         sine_plot.centery = height/2
@@ -161,7 +183,7 @@ def on_set_mode():
         sine_plot.height = height*2/5
 
     sine_plot.update_alignment()
-        
+
 
 on_set_mode()
 
