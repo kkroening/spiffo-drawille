@@ -93,7 +93,7 @@ class UI:
 
         for control in self.controls:
             c.set_text(name_left, line_top, control.name)
-            minvalue_left = name_left + (UI_NAME_CHARS + 2) * HORIZONTAL_PIXELS_PER_CHAR
+            minvalue_left = name_left + (UI_NAME_CHARS + 3) * HORIZONTAL_PIXELS_PER_CHAR
             c.set_text(minvalue_left, line_top, str(int(control.min_value)))
             maxvalue_left = self.x + self.width - UI_RIGHT_MARGIN - 2 * HORIZONTAL_PIXELS_PER_CHAR
             maxvalue_left = maxvalue_left - (maxvalue_left % HORIZONTAL_PIXELS_PER_CHAR)
