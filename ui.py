@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from time import sleep
 import drawille
+import math
 import os
 import select
 import sys
@@ -42,6 +43,15 @@ def draw_rect(c, x1, y1, x2, y2):
 def draw_line(c, x1, y1, x2, y2):
     for x, y in drawille.line(x1, y1, x2, y2):
         c.set(x, y)
+
+def draw_ellipse(c, centerx, centery, width, height, samples):
+    for i in range(samples):
+        x = int(centerx + width * math.cos(2 * math.pi * (i/float(samples))))
+        y = int(centery + height * math.sin(2 * math.pi * (i/float(samples))))
+        if i != 0:
+            draw_line(c, x, y, prevx, prevy)
+        prevx = x
+        prevy = y
 
 
 class Control:
