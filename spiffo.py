@@ -5,7 +5,6 @@ import math
 from time import sleep
 import locale
 import os
-import pygame
 import termios
 import sys
 import tty
