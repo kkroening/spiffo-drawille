@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from drawille import Canvas, line
+import drawille
 import curses
 import math
 from time import sleep
@@ -35,9 +35,9 @@ speed = 2.0
 cycles = 2.0
 resolution = 600
 
-heightStr, widthStr = os.popen('stty size', 'r').read().split()
-width = (int(widthStr)-1)*2
-height = (int(heightStr)-1)*4
+size = drawille.getTerminalSize()
+width = (size[0]-1)*2
+height = (size[1]-1)*4
 
 def render(c):
     for n in range(int(cycles * resolution)):
@@ -55,7 +55,7 @@ def render(c):
         y = (y1 + y2 + y3)*height/500 + height/2
         if not ((x < 0 or x > width) and (y < 0 or y > width) and (prevx < 0 or prevx > height) and (prevy < 0 or prevy > height)):
             if n != 0:
-                for px,py in line(prevx, prevy, x, y):
+                for px,py in drawille.line(prevx, prevy, x, y):
                     c.set(px, py)
         prevx = x
         prevy = y
@@ -84,7 +84,7 @@ def update(c, deltaTime):
 
 
 def __main__(stdscr):
-    c = Canvas()
+    c = drawille.Canvas()
     while 1:
         render(c)
 
