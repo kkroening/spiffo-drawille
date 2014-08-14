@@ -5,6 +5,11 @@ import math
 from time import sleep
 import locale
 import os
+import pygame
+import termios
+import sys
+import tty
+import select
 
 locale.setlocale(locale.LC_ALL,"")
 
@@ -81,9 +86,9 @@ def draw_line(c, x1, y1, x2, y2):
 class Control:
     def __init__(self, name, value, min_value, max_value):
         self.name = name
-        self.value = value
-        self.min_value = min_value
-        self.max_value = max_value
+        self.value = float(value)
+        self.min_value = float(min_value)
+        self.max_value = float(max_value)
 
     def render(c):
         for x in range(self.x, self.x + self.width + 1):
@@ -128,19 +133,43 @@ class UI:
         for control in self.controls:
             c.set_text(name_left, line_top, control.name)
             minvalue_left = name_left + (UI_NAME_CHARS + 2) * HORIZONTAL_PIXELS_PER_CHAR
-            c.set_text(minvalue_left, line_top, str(control.min_value))
+            c.set_text(minvalue_left, line_top, str(int(control.min_value)))
             maxvalue_left = self.x + self.width - UI_RIGHT_MARGIN - 2 * HORIZONTAL_PIXELS_PER_CHAR
             maxvalue_left = maxvalue_left - (maxvalue_left % HORIZONTAL_PIXELS_PER_CHAR)
-            c.set_text(maxvalue_left, line_top, str(control.max_value))
-            bar_left = minvalue_left + 3 * HORIZONTAL_PIXELS_PER_CHAR
-            bar_right = maxvalue_left - 3 * HORIZONTAL_PIXELS_PER_CHAR
-            bar_actual =bar_left + int((bar_right - bar_left) * (control.value - control.min_value) / float(control.max_value - control.min_value))
+            c.set_text(maxvalue_left, line_top, str(int(control.max_value)))
+            bar_left = minvalue_left + 3 * HORIZONTAL_PIXELS_PER_CHAR + 2
+            bar_right = maxvalue_left - 3 * HORIZONTAL_PIXELS_PER_CHAR - 2
+            bar_actual = bar_left + int((bar_right - bar_left) * (control.value - control.min_value) / (control.max_value - control.min_value))
             #bar_actual = bar_right
             draw_solid_rect(c, bar_left, line_top, bar_actual, line_top+1)
             line_top = line_top + VERTICAL_PIXELS_PER_CHAR
 
         c.set_text(left, top + VERTICAL_PIXELS_PER_CHAR * self.selected_control_id, "*")
-        c.set_text(left, top, "*")
+        selected_bar_top = top + self.selected_control_id * VERTICAL_PIXELS_PER_CHAR - 1
+        draw_rect_border(c, bar_left - 2, selected_bar_top, bar_right + 2, selected_bar_top + VERTICAL_PIXELS_PER_CHAR)
+
+    def next_control(self):
+        self.selected_control_id = self.selected_control_id + 1
+        if self.selected_control_id >= len(self.controls):
+            self.selected_control_id = 0
+
+    def prev_control(self):
+        self.selected_control_id = self.selected_control_id - 1
+        if self.selected_control_id < 0:
+            self.selected_control_id = len(self.controls) - 1
+
+    def decrease_control(self):
+        control = self.controls[self.selected_control_id]
+        control.value = control.value - 1/10. * (control.max_value - control.min_value)
+        if control.value < control.min_value:
+            control.value = control.min_value
+
+    def increase_control(self):
+        control = self.controls[self.selected_control_id]
+        control.value = control.value + 1/10. * (control.max_value - control.min_value)
+        if control.value > control.max_value:
+            control.value = control.max_value
+
 
 
 controls = [
@@ -197,19 +226,48 @@ def update(c, deltaTime):
     p3 += dp3 * deltaTime
 
 
+def init_input():
+    global old_settings
+    old_settings = termios.tcgetattr(sys.stdin)
+    tty.setcbreak(sys.stdin.fileno())
+
+def poll_input():
+    return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
+
+def cleanup_input():
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+
 def __main__(stdscr):
-    c = drawille.Canvas()
-    while 1:
-        render(c)
+    try:
+        init_input()
 
-        #f = c.frame(0, 0, 180, 140)
-        f = c.frame(0, 0, width, height)
-        stdscr.addstr(0, 0, '{0}\n'.format(f))
-        stdscr.refresh()
+        c = drawille.Canvas()
+        while 1:
+            render(c)
 
-        sleep(1.0/20)
-        update(c, 1.0/20 * speed) # FIXME: use clock.
-        c.clear()
+            f = c.frame(0, 0, width, height)
+            stdscr.addstr(0, 0, '{0}\n'.format(f))
+            stdscr.refresh()
+
+            if poll_input():
+                key = sys.stdin.read(1)
+                if key == 'q':
+                    break
+                elif key == 'k':
+                    ui.prev_control()
+                elif key == 'j':
+                    ui.next_control()
+                elif key == 'h':
+                    ui.decrease_control()
+                elif key == 'l':
+                    ui.increase_control()
+
+            sleep(1.0/20)
+            update(c, 1.0/20 * speed) # FIXME: use clock.
+            c.clear()
+
+    finally:
+        cleanup_input()
 
 
 if __name__ == '__main__':
