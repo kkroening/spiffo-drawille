@@ -17,7 +17,7 @@ width = (size[0]-1) * ui.HORIZONTAL_PIXELS_PER_CHAR
 height = (size[1]-1) * ui.VERTICAL_PIXELS_PER_CHAR
 
 
-amplitude = ui.Control("amp", 1, -2, 2)
+amplitude = ui.Control("amp", 1, 0, 2)
 frequency = ui.Control("freq", 1.0, 0.1, 5)
 phase = ui.Control("phase", 0.0, -1, 1)
 resolution = ui.Control("res", 5, 1, 10)
@@ -29,7 +29,8 @@ controls = [
     amplitude,
     frequency,
     phase,
-    #resolution
+    #resolution,
+    speed
 ]
 
 class Plot:
@@ -82,7 +83,7 @@ class PhaseSpace1DPlot(Plot):
         self.draw_centered_axes(c)
 
         x = self.centerx
-        y = int(self.centery + self.height/4. * amplitude.value * math.sin(2 * math.pi * (frequency.value * time + phase.value)))
+        y = int(self.centery - self.height/4. * amplitude.value * math.sin(2 * math.pi * (frequency.value * time + phase.value)))
         ui.draw_ellipse(c, x, y, 5, 5, 16)
 
 
@@ -93,7 +94,7 @@ class PhaseSpace2DPlot(Plot):
         ui.draw_ellipse(c, self.centerx, self.centery, self.width/4. * amplitude.value, self.height/4. * amplitude.value, 100)
 
         x = int(self.centerx + self.width/4. * amplitude.value * math.cos(2 * math.pi * (frequency.value * time + phase.value)))
-        y = int(self.centery + self.height/4. * amplitude.value * math.sin(2 * math.pi * (frequency.value * time + phase.value)))
+        y = int(self.centery - self.height/4. * amplitude.value * math.sin(2 * math.pi * (frequency.value * time + phase.value)))
         ui.draw_ellipse(c, x, y, 5, 5, 16)
 
 

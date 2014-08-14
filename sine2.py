@@ -20,7 +20,7 @@ height = (size[1]-1) * ui.VERTICAL_PIXELS_PER_CHAR
 amplitude1 = ui.Control("amp1", 1, 0, 2)
 amplitude2 = ui.Control("amp2", 0, 0, 2)
 frequency1 = ui.Control("freq1", 1.0, 0.1, 5)
-frequency2 = ui.Control("freq2", 1.0, 0.1, 5)
+frequency2 = ui.Control("freq2", 2.0, 0.1, 5)
 phase1 = ui.Control("phase1", 0.0, -1, 1)
 phase2 = ui.Control("phase2", 0.0, -1, 1)
 resolution = ui.Control("res", 5, 1, 10)
@@ -35,7 +35,8 @@ controls = [
     frequency2,
     phase1,
     phase2,
-    #resolution
+    #resolution,
+    speed
 ]
 
 class Plot:
