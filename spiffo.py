@@ -83,7 +83,7 @@ def update(c, deltaTime):
     p3 += dp3 * deltaTime
 
 
-def __main__(stdscr, projection=False):
+def __main__(stdscr):
     c = Canvas()
     while 1:
         render(c)
@@ -100,7 +100,4 @@ def __main__(stdscr, projection=False):
 
 if __name__ == '__main__':
     from sys import argv
-    projection = False
-    if '-p' in argv:
-        projection = True
-    curses.wrapper(__main__, projection)
+    curses.wrapper(__main__)
