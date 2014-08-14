@@ -13,10 +13,15 @@ stdscr.refresh()
 
 
 #
-# Hard-coded constants that match Drawille.
+# Hard-coded constants that match Drawille's behavior.
 #
 HORIZONTAL_PIXELS_PER_CHAR = 2
 VERTICAL_PIXELS_PER_CHAR = 4
+
+
+size = drawille.getTerminalSize()
+width = (size[0]-1) * HORIZONTAL_PIXELS_PER_CHAR
+height = (size[1]-1) * VERTICAL_PIXELS_PER_CHAR
 
 
 a1 = 500.0
@@ -42,19 +47,15 @@ speed = 2.0
 cycles = 2.0
 resolution = 600
 
-size = drawille.getTerminalSize()
-width = (size[0]-1) * HORIZONTAL_PIXELS_PER_CHAR
-height = (size[1]-1) * VERTICAL_PIXELS_PER_CHAR
-
-ui_width = width / 8
+ui_width = width / 6
 ui_height = height / 3
 ui_x = width - 4 - ui_width
 ui_y = 4
 
 
 def draw_solid_rect(c, x1, y1, x2, y2):
-    for x in range(x1, x2):
-        for y in range(y1, y2):
+    for x in range(x1, x2+1):
+        for y in range(y1, y2+1):
             c.set(x, y)
 
 def draw_rect_border(c, x1, y1, x2, y2):
@@ -64,8 +65,8 @@ def draw_rect_border(c, x1, y1, x2, y2):
     draw_line(c, x1, y2, x1, y1)
 
 def clear_rect(c, x1, y1, x2, y2):
-    for x in range(x1, x2):
-        for y in range(y1, y2):
+    for x in range(x1, x2+1):
+        for y in range(y1, y2+1):
             c.unset(x, y)
 
 def draw_rect(c, x1, y1, x2, y2):
@@ -78,10 +79,11 @@ def draw_line(c, x1, y1, x2, y2):
 
 
 class Control:
-    def __init__(self, name, minValue, maxValue):
+    def __init__(self, name, value, min_value, max_value):
         self.name = name
-        self.minValue = minValue
-        self.maxValue = maxValue
+        self.value = value
+        self.min_value = min_value
+        self.max_value = max_value
 
     def render(c):
         for x in range(self.x, self.x + self.width + 1):
@@ -91,6 +93,10 @@ class Control:
                 else:
                     c.unset(x, y)
 
+UI_LEFT_MARGIN = 4
+UI_NAME_CHARS  = 8
+UI_RIGHT_MARGIN = 4
+
 class UI:
     def __init__(self, x, y, width, height, controls):
         self.x = x
@@ -98,19 +104,50 @@ class UI:
         self.width = width
         self.height = height
         self.controls = controls
+        self.selected_control_id = 0
 
     def render(self, c):
+        #
+        # Draw main box.
+        #
         draw_rect(c, self.x, self.y, self.x + self.width, self.y + self.height)
-        n = 0
+
+        left = self.x + UI_LEFT_MARGIN + HORIZONTAL_PIXELS_PER_CHAR
+        top = self.y + VERTICAL_PIXELS_PER_CHAR
+
+        #
+        # Align left and top to character boundary.
+        #
+        left = left - (left % HORIZONTAL_PIXELS_PER_CHAR)
+        top = top - (top % VERTICAL_PIXELS_PER_CHAR)
+
+        name_left  = left + HORIZONTAL_PIXELS_PER_CHAR * 2
+
+        line_top = top
+
         for control in self.controls:
-            c.set_text(0, n*4, control.name)
-            n = n + 1
+            c.set_text(name_left, line_top, control.name)
+            minvalue_left = name_left + (UI_NAME_CHARS + 2) * HORIZONTAL_PIXELS_PER_CHAR
+            c.set_text(minvalue_left, line_top, str(control.min_value))
+            maxvalue_left = self.x + self.width - UI_RIGHT_MARGIN - 2 * HORIZONTAL_PIXELS_PER_CHAR
+            maxvalue_left = maxvalue_left - (maxvalue_left % HORIZONTAL_PIXELS_PER_CHAR)
+            c.set_text(maxvalue_left, line_top, str(control.max_value))
+            bar_left = minvalue_left + 3 * HORIZONTAL_PIXELS_PER_CHAR
+            bar_right = maxvalue_left - 3 * HORIZONTAL_PIXELS_PER_CHAR
+            bar_actual =bar_left + int((bar_right - bar_left) * (control.value - control.min_value) / float(control.max_value - control.min_value))
+            #bar_actual = bar_right
+            draw_solid_rect(c, bar_left, line_top, bar_actual, line_top+1)
+            line_top = line_top + VERTICAL_PIXELS_PER_CHAR
+
+        c.set_text(left, top + VERTICAL_PIXELS_PER_CHAR * self.selected_control_id, "*")
+        c.set_text(left, top, "*")
 
 
-controls = {
-    Control("test", 0, 10),
-    Control("test2", 0, 10)
-}
+controls = [
+    Control("test", 3, 0, 10),
+    Control("test2", 4, 0, 10),
+    Control("test3", 4, 0, 10)
+]
 ui = UI(ui_x, ui_y, ui_width, ui_height, controls)
 
 def render_spirograph(c):
