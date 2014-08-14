@@ -19,7 +19,7 @@ width = (size[0]-1) * HORIZONTAL_PIXELS_PER_CHAR
 height = (size[1]-1) * VERTICAL_PIXELS_PER_CHAR
 
 
-def draw_solid_rect(c, x1, y1, x2, y2):
+def fill_rect(c, x1, y1, x2, y2):
     for x in range(x1, x2+1):
         for y in range(y1, y2+1):
             c.set(x, y)
@@ -102,7 +102,7 @@ class UI:
             bar_right = maxvalue_left - 3 * HORIZONTAL_PIXELS_PER_CHAR - 2
             bar_actual = bar_left + int((bar_right - bar_left) * (control.value - control.min_value) / (control.max_value - control.min_value))
             #bar_actual = bar_right
-            draw_solid_rect(c, bar_left, line_top, bar_actual, line_top+1)
+            fill_rect(c, bar_left, line_top, bar_actual, line_top+1)
             line_top = line_top + VERTICAL_PIXELS_PER_CHAR
 
         c.set_text(left, top + VERTICAL_PIXELS_PER_CHAR * self.selected_control_id, "*")
